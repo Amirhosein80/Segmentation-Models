@@ -13,9 +13,10 @@
 - [ ] Regseg
 
 ## Model add-ones
-- [] Rep Convs
+- [x] RepConv
+- [x] Self-Attention blocks (SENET, EffectiveSENET, ECA)
 - [ ] EMA
 
 ## Training modes
--[ ] Knowledge Distilition
--[ ] Self superviesd learning
+- [ ] Knowledge Distilition
+- [ ] Self superviesd learning
