@@ -9,14 +9,11 @@
 - [x] Cutmix
 
 ## Models
-- [ ] BisenetV2
+- [x] BisenetV2
 - [ ] Regseg
 
 ## Model add-ones
 - [x] RepConv
 - [x] Self-Attention blocks (SENET, EffectiveSENET, ECA)
 - [ ] EMA
-
-## Training modes
 - [ ] Knowledge Distilition
-- [ ] Self superviesd learning
