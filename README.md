@@ -17,3 +17,7 @@
 - [x] Self-Attention blocks (SENET, EffectiveSENET, ECA)
 - [ ] EMA
 - [ ] Knowledge Distilition
+
+## TODO
+- [ ] Update base dataset voc datastet
+- [ ] Add optional item for aux loss
