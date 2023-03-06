@@ -1,23 +1,25 @@
 # Segmentation-Models
 ## Datasets
-- [x] CityScapes
-- [ ] Voc
+- CityScapes
 
 ## Transforms
-- [X] RandAug
-- [x] TrivialAugmentWide
-- [x] Cutmix
+- RandAug
+- TrivialAugmentWide
+- Cutmix
 
 ## Models
-- [x] BisenetV2
-- [ ] Regseg
+- BisenetV2
+
 
 ## Model add-ones
-- [x] RepConv
-- [x] Self-Attention blocks (SENET, EffectiveSENET, ECA)
-- [ ] EMA
-- [ ] Knowledge Distilition
+- RepConv (*IDEA)
+- Self-Attention blocks (SENET, EffectiveSENET, ECA)
+- EMA
+- Knowledge Distillation
 
 ## TODO
-- [ ] Update base dataset voc datastet
+- [ ] Add Comment
+- [ ] Update base dataset for other datasets
 - [ ] Add optional item for aux loss
+- [ ] Write Train & Validation & Overfit Code
+- [ ] Finish Trainer
