@@ -23,9 +23,6 @@ CLASSES = {0: {"name": "road", "color": (128, 64, 128)}, 1: {"name": "sidewalk",
            18: {"name": "bicycle", "color": (119, 11, 32)}, }
 
 NUM_CLASSES = 19
-IGNORE_LABEL = 255
-MEAN = (0.485, 0.456, 0.406)
-STD = (0.229, 0.224, 0.225)
 USE_CLASS_WEIGHTS = False
 CLASS_WEIGHTS = torch.tensor([0.8373, 0.918, 0.866, 1.0345,
                               1.0166, 0.9969, 0.9754, 1.0489,
@@ -48,21 +45,40 @@ LABEL_MAPPING = {-1: IGNORE_LABEL, 0: IGNORE_LABEL,
                  31: 16, 32: 17, 33: 18}
 
 # Augmentation settings :)
-
+IGNORE_LABEL = 255
+MEAN = (0.485, 0.456, 0.406)
+STD = (0.229, 0.224, 0.225)
 MIN_MAX_SIZE = [400, 1600]
 TRAIN_SIZE = [768, 768]
 VAL_SIZE = [1024, 1024]
-
+CJ_BRIGHTNESS = 0.0
+CJ_CONTRAST = 0.0
+CJ_SATURATION = 0.0
+CJ_HUE = 0.0
 NOISE_FACTOR = 15
+ROTATION_DEGREE = 10.0
+POSTERIZE_BITS = 2
+RANDAUG_NUM_OPS = 2
+RANDAUG_MAG = 9
+RANDAUG_NUM_MAG_BINS = 31
+TRIVIAL_NUM_MAG_BINS = 31
+TRAIN_AUGS = [
+    "RandomResize",
+    "RandomCrop",
+    "RandomHorizontalFlip",
+    "RandAugment",
+    "ToTensor",
+    "Normalize",
+    "CutMix"
+]
 
 # Train settings :)
 
 OPTIMIZER = "SGD"  # Options: ["SGD", "ADAMW"]
 BATCH_SIZE = 8
 NUM_WORKER = 4
-SGD_LR = 0.05
+LR = 0.05
 SGD_MOMENTUM = 0.9
-ADAMW_LR = 5e-3
 ADAMW_BETAS = (0.9, 0.999)
 WEIGHT_DECAY = 1e-5
 EPOCHS = 300
