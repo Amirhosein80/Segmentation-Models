@@ -5,6 +5,8 @@ import torch
 DIR = "data/Cityscapes/"
 PHASES = ["train", "val"]
 TRAIN_MODES = ["supervised"]  # TODO Add self-supervised mode & self-distillation
+NUM_TRAIN_DATAS = 2975
+NUM_VAL_DATAS = 500
 
 CLASSES = {0: {"name": "road", "color": (128, 64, 128)}, 1: {"name": "sidewalk", "color": (244, 35, 232)},
            2: {"name": "building", "color": (70, 70, 70)}, 3: {"name": "wall", "color": (102, 102, 156)},
@@ -24,6 +26,7 @@ NUM_CLASSES = 19
 IGNORE_LABEL = 255
 MEAN = (0.485, 0.456, 0.406)
 STD = (0.229, 0.224, 0.225)
+USE_CLASS_WEIGHTS = False
 CLASS_WEIGHTS = torch.tensor([0.8373, 0.918, 0.866, 1.0345,
                               1.0166, 0.9969, 0.9754, 1.0489,
                               0.8786, 1.0023, 0.9539, 0.9843,
@@ -69,8 +72,12 @@ SCHEDULER_METHOD = "COS"  # Options: ["POLY", "COS"]
 POLY_POWER = 0.9
 LABEL_SMOOTHING = 0.0
 OHEM_THRESH = 0.3
+FOCAL_ALPHA = 0.25
+FOCAL_GAMMA = 2.0
 MODEL = "bisenetv2"
-LOSS = "OHEM"  # Options: ["OHEM", "CROSS"]
+LOSS = "OHEM"  # Options: ["OHEM", "CROSS", "FOCAL", "FOCAL_IOU"]
+USE_EMA = True
+EMA_DECAY = 0.9998
 RESUME = False
 OVERFIT_TEST = False
 OVERFIT_EPOCHS = 100
