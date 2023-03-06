@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import copy
-from typing import Optional, L
+from typing import Optional
 
 
 class ModelEma(nn.Module):
