@@ -129,6 +129,7 @@ class RandomCrop:
     """
     Randomly crop image :)
     """
+
     def __init__(self, crop_size: Optional[List[int]] = None, ignore_label: int = 255):
         if crop_size is None: crop_size = [512, 1024]
         self.ignore_label = ignore_label
@@ -511,3 +512,52 @@ class RandomCutmix(torch.nn.Module):
         mask[:, :, y1:y2, x1:x2] = mask_rolled[:, :, y1:y2, x1:x2]
 
         return batch, mask
+
+
+def get_augs(cfgs) -> Tuple[Compose, Compose]:
+    """
+    get augmentations
+    :param cfgs config variables
+    """
+    train_transforms = []
+    for aug in cfgs.TRAIN_AUGS:
+        if aug == "ToTensor":
+            train_transforms.append(ToTensor())
+        elif aug == "Normalize":
+            train_transforms.append(Normalize(mean=cfgs.MEAN, std=cfgs.STD))
+        elif aug == "RandomResize":
+            train_transforms.append(RandomResize(min_max_size=cfgs.MIN_MAX_SIZE))
+        elif aug == "Resize":
+            train_transforms.append(Resize(size=cfgs.TRAIN_SIZE))
+        elif aug == "RandomCrop":
+            train_transforms.append(RandomCrop(crop_size=cfgs.TRAIN_SIZE, ignore_label=cfgs.IGNORE_LABEL))
+        elif aug == "RandomHorizontalFlip":
+            train_transforms.append(RandomHorizontalFlip())
+        elif aug == "RandomVerticalFlip":
+            train_transforms.append(RandomVerticalFlip())
+        elif aug == "ColorJitter":
+            train_transforms.append(ColorJitter(brightness=cfgs.CJ_BRIGHTNESS, contrast=cfgs.CJ_CONTRAST,
+                                                saturation=cfgs.CJ_SATURATION, hue=cfgs.CJ_HUE))
+        elif aug == "RandomRotation":
+            train_transforms.append(RandomRotation(degrees=cfgs.ROTATION_DEGREE, seg_fill=cfgs.IGNORE_LABEL))
+        elif aug == "RandomGrayscale":
+            train_transforms.append(RandomGrayscale())
+        elif aug == "Posterize":
+            train_transforms.append(Posterize(bits=cfgs.POSTERIZE_BITS))
+        elif aug == "RandAugment":
+            train_transforms.append(RandAugment(num_ops=cfgs.RANDAUG_NUM_OPS, magnitude=cfgs.RANDAUG_MAG,
+                                                num_magnitude_bins=cfgs.RANDAUG_NUM_MAG_BINS,
+                                                ignore_value=cfgs.IGNORE_LABEL))
+        elif aug == "TrivialAugmentWide":
+            train_transforms.append(TrivialAugmentWide(num_magnitude_bins=cfgs.TRIVIAL_NUM_MAG_BINS,
+                                                       ignore_value=cfgs.IGNORE_LABEL))
+        else:
+            raise NotImplemented
+
+    valid_transforms = [
+        Resize(size=cfgs.VAL_SIZE),
+        ToTensor(),
+        Normalize(mean=cfgs.MEAN, std=cfgs.STD)
+    ]
+
+    return Compose(train_transforms), Compose(valid_transforms)
