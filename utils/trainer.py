@@ -12,15 +12,10 @@ from collections import OrderedDict
 
 
 class Trainer(object):
-    def __init__(self, model, dataset_name: str, name: str):
-        if dataset_name == "cityscapes":
-            import configs.cityscapes as config
-        else:
-            raise NotImplemented
-
+    def __init__(self, model, config, name: str, device: str):
         self.name = name
         self.config = config
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = device
         self.now = datetime.datetime.now()
         self.now = f"{self.now.year}-{self.now.month}-{self.now.day}_" \
                    f"{self.now.hour}-{self.now.minute}-{self.now.second}"
