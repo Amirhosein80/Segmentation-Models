@@ -5,15 +5,29 @@ from typing import Optional
 
 
 class BootstrappedCE(nn.Module):
+    """
+    OHEM Cross Entropy for semantic segmentation :)
+    Code Inspired from: https://arxiv.org/pdf/1604.03540
+    """
     def __init__(self, loss_th: float = 0.3, ignore_index: int = 255, label_smoothing: float = 0.0,
-                 weight: Optional[torch.Tensor] = None):
+                 weight: Optional[torch.Tensor] = None) -> None:
+        """
+        :param loss_th: ohem loss threshold. default is 0.3
+        :param ignore_index: ignore value in target. default is 255
+        :param label_smoothing: epsilon value in label smoothing. default is 0.0
+        :param weight: weight of each class in loss function. default is None
+        """
         super().__init__()
         self.threshold = loss_th
         self.criterion = nn.CrossEntropyLoss(
             ignore_index=ignore_index, reduction="none", label_smoothing=label_smoothing, weight=weight
         )
 
-    def forward(self, output, labels):
+    def forward(self, output: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        """
+        :param output: model predicts
+        :param labels: real labels
+        """
         pixel_losses = self.criterion(output, labels).contiguous().view(-1)
         k = torch.numel(labels) // 16
         mask = (pixel_losses > self.threshold)
@@ -25,7 +39,18 @@ class BootstrappedCE(nn.Module):
 
 
 class FocalLoss(nn.Module):
+    """
+    Focal Loss for semantic segmentation with focal iou loss(*IDEA) :)
+    Focal Loss paper: https://arxiv.org/pdf/1708.02002
+    Focal Tversky paper (reference paper for iou focal idea): https://arxiv.org/pdf/1810.07842
+    """
     def __init__(self, alpha: float = 0.25, gamma: float = 2.0, ignore_index: int = 255, use_iou_loss: bool = True):
+        """
+        :param alpha: alpha value for focal loss. default is 0.25
+        :param gamma: gamma value for focal loss. default is 2.0
+        :param ignore_index: ignore value in target. default is 255
+        :param use_iou_loss: calculate & add iou loss to focal loss (*IDEA). default is True
+        """
         super().__init__()
         self.use_iou_loss = use_iou_loss
         self.alpha = alpha
