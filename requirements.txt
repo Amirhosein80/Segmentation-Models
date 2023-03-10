@@ -5,3 +5,7 @@ Pillow~=9.1.1
 opencv-python~=4.6.0.66
 matplotlib~=3.6.3
 numpy~=1.23.4
+tensorboardX~=2.5.1
+torchvision~=0.14.0+cu117
+tabulate~=0.8.10
+torchinfo~=1.7.1
