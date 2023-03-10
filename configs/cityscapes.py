@@ -69,7 +69,6 @@ TRAIN_AUGS = [
     "RandAugment",
     "ToTensor",
     "Normalize",
-    "CutMix"
 ]
 
 # Train settings :)
@@ -81,6 +80,8 @@ LR = 0.05
 SGD_MOMENTUM = 0.9
 ADAMW_BETAS = (0.9, 0.999)
 WEIGHT_DECAY = 1e-5
+GRADIENT_ACCUMULATION_STEPS = 16
+GRADIENT_NORM = None
 EPOCHS = 300
 WARMUP_EPOCHS = 20
 WARMUP_FACTOR = 0.1
