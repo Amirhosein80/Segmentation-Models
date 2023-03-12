@@ -13,13 +13,14 @@ import tqdm.autonotebook as tqdm
 from loss_funcs import BootstrappedCE, FocalLoss
 from models.model_utils import reparameterize_model
 from utils.model_ema import ModelEma
-from utils.train_utils import ConfusionMatrix, AverageMeter, set_seed, get_lr
+from utils.train_utils import ConfusionMatrix, AverageMeter, EarlyStopping, set_seed, get_lr
 
 
 class Trainer(object):
     """
     A Trainer Class for test & evaluate model :)
     """
+
     def __init__(self, model, config, name: str, device: str):
         """
         :param model:
@@ -39,6 +40,7 @@ class Trainer(object):
         self.model = model
         self.model.to(self.device)
         self.writer = ts.SummaryWriter(f"runs/{self.name}_{self.now}")
+        self.early_stopping = EarlyStopping(self.config)
         self._get_optimizer()
         self._get_criterion()
         self._resume()
@@ -241,16 +243,19 @@ class Trainer(object):
 
     def _get_optimizer(self):
         if hasattr(self.model, "get_params"):
-            params = self.model.get_params(lr=self.config.LR, weight_decay=self.config.WEIGHT_DECAY)
+            params = self.model.get_params(lr=self.config.LR,
+                                           weight_decay=self.config.WEIGHT_DECAY if not self.config.OVERFIT_TEST else 0)
         else:
             params = self.model.parameters()
 
         if self.config.OPTIMIZER == "ADAMW":
-            self.optimizer = optim.AdamW(params, lr=self.config.LR, weight_decay=self.config.WEIGHT_DECAY,
+            self.optimizer = optim.AdamW(params, lr=self.config.LR,
+                                         weight_decay=self.config.WEIGHT_DECAY if not self.config.OVERFIT_TEST else 0,
                                          betas=self.config.ADAMW_BETAS)
 
         elif self.config.OPTIMIZER == "SGD":
-            self.optimizer = optim.SGD(params, lr=self.config.LR, weight_decay=self.config.WEIGHT_DECAY,
+            self.optimizer = optim.SGD(params, lr=self.config.LR,
+                                       weight_decay=self.config.WEIGHT_DECAY if not self.config.OVERFIT_TEST else 0,
                                        momentum=self.config.SGD_MOMENTUM)
 
         else:
@@ -337,6 +342,26 @@ class Trainer(object):
                 self.writer.add_scalar('Metric/valid_ema', ema_acc, epoch)
             else:
                 ema_acc, ema_loss = 0, 0
+            self.writer.add_hparams(hparam_dict={
+                "lr": self.config.LR,
+                "weight_decay": self.config.WEIGHT_DECAY,
+                "optimizer": self.config.OPTIMIZER,
+                "batch_size": self.config.BATCH_SIZE,
+                "loss": self.config.LOSS,
+                "grad_accum": self.config.GRADIENT_ACCUMULATION_STEPS,
+                "grad_norm": self.config.GRADIENT_NORM,
+                },
+                metric_dict={
+                    "loss": test_loss,
+                    "acc": test_acc,
+            })
+
+            self._save(acc=test_acc, epoch=epoch)
+
+            self.early_stopping(train_loss=train_loss, validation_loss=test_loss)
+            if self.early_stopping.early_stop:
+                print(f"Early Stop at Epoch: {epoch}")
+                break
 
             with open(f"{self.name}.txt", "a") as f:
                 f.write(f"Epoch: {epoch}, Model: {model_type},"
